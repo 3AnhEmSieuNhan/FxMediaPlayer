@@ -1,0 +1,44 @@
+
+
+#openFile{
+    -fx-background-image:url("../Images/folder.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
+#playButton{
+    -fx-background-image:url("../Images/play.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
+#pauseButton{
+    -fx-background-image:url("../Images/pause.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
+#stopButton{
+    -fx-background-image:url("../Images/stop.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
+#replayButton{
+    -fx-background-image:url("../Images/replayButton.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
+#muteButton{
+    -fx-background-image:url("../Images/mute.png");
+    -fx-background-size: 20 20;
+    -fx-background-repeat: no-repeat;
+    -fx-background-postion: center;
+    -fx-background-color: transparent;
+}
