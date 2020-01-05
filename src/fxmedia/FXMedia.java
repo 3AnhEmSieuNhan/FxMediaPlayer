@@ -14,19 +14,24 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
-/**
- *
- * @author MSI 7RD
- */
+
 public class FXMedia extends Application
 {
+
+    /**
+     *
+     * @param stage
+     * @throws Exception
+     */
     @Override
     public void start(Stage stage) throws Exception 
     {
         
-        Parent root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
+        Parent root;
+        root = FXMLLoader.load(getClass().getResource("FXMLDocument.fxml"));
         Scene scene = new Scene(root);
-        stage.setTitle("Minh siêu đẹp trai MediaPlayer");
+        stage.setTitle("Vương Bảo Minh siêu đẹp trai MediaPlayer");
+        stage.setScene(scene);
         scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent t) {
@@ -36,12 +41,10 @@ public class FXMedia extends Application
                 }
             }
         });
-        stage.setScene(scene);
+       
         stage.show();
     }
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String[] args) 
     {
         launch(args);

@@ -7,6 +7,8 @@ package fxmedia;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -19,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
@@ -30,6 +33,7 @@ import javafx.util.Duration;
 
 public class FXMLDocumentController implements Initializable 
 {
+    private final List<MediaPlayer> list = new ArrayList<MediaPlayer>();
     private MediaPlayer mediaPlayer;
     
     @FXML 
@@ -39,6 +43,8 @@ public class FXMLDocumentController implements Initializable
     private Slider slider;
     @FXML
     private Slider seekSlider;
+    @FXML
+    private Label PlayingLabel;
     @FXML
     private Button replayButton;
     private String filePath;
@@ -59,37 +65,53 @@ public class FXMLDocumentController implements Initializable
         
         if(filePath!=null)
         {
-            
+            PlayingLabel.setText(file.getName());
             Media media = new Media(filePath);
             mediaPlayer = new MediaPlayer(media);
             mediaView.setMediaPlayer(mediaPlayer);
-            DoubleProperty width = mediaView.fitWidthProperty();
-            DoubleProperty hight = mediaView.fitHeightProperty();
+            Setting(mediaPlayer);
+            mediaPlayer.play();
+        }
+        
+     
+    
+    }
+    void Setting(MediaPlayer player)
+    {
+         DoubleProperty width;
+            width = mediaView.fitWidthProperty();
+            DoubleProperty hight;
+            hight = mediaView.fitHeightProperty();
             
             width.bind(Bindings.selectDouble(mediaView.sceneProperty(), "width"));
             hight.bind(Bindings.selectDouble(mediaView.sceneProperty(), "hight"));
-            
-            slider.setValue(mediaPlayer.getVolume() * 100);
+         slider.setValue(player.getVolume() * 100);
             slider.valueProperty().addListener(new InvalidationListener() {
                 @Override
                 public void invalidated(Observable o) {
-                    mediaPlayer.setVolume(slider.getValue()/100);
+                    player.setVolume(slider.getValue()/100);
                 }
             });
             seekSlider.maxProperty().bind(Bindings.createDoubleBinding(
-                            () -> mediaPlayer.getTotalDuration().toSeconds(),
+                            () -> player.getTotalDuration().toSeconds(),
 
-                             mediaPlayer.totalDurationProperty()));
-            mediaPlayer.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+                             player.totalDurationProperty()));
+            player.currentTimeProperty().addListener(new ChangeListener<Duration>() {
                 @Override
                 public void changed(ObservableValue<? extends Duration> ov, Duration t, Duration t1) {
                     seekSlider.setValue(t1.toSeconds());
                 }
             });
+           /* mediaView.mediaPlayerProperty().addListener(new ChangeListener<MediaPlayer>() {
+                @Override
+                public void changed(ObservableValue<? extends MediaPlayer> ov, MediaPlayer t, MediaPlayer t1) {
+                    PlayingLabel.setText(file.getName());
+                }
+            });*/
                 seekSlider.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent t) {
-                    mediaPlayer.seek(Duration.seconds(seekSlider.getValue()));
+                    player.seek(Duration.seconds(seekSlider.getValue()));
                 }
             });
                 
@@ -106,21 +128,21 @@ public class FXMLDocumentController implements Initializable
             }
              if(dem%2 !=0)
                  {
-                     mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-                 if(mediaPlayer.getCurrentTime().toSeconds() == mediaPlayer.getTotalDuration().toSeconds()) 
+                     player.setCycleCount(MediaPlayer.INDEFINITE);
+                 if(player.getCurrentTime().toSeconds() == player.getTotalDuration().toSeconds()) 
                 {
             
-            mediaPlayer.seek(Duration.ZERO);
-            mediaPlayer.play();
+            player.seek(Duration.ZERO);
+            player.play();
              }
                  }
              if(dem%2 == 0)
                 {
-                    mediaPlayer.setCycleCount(0);
-                    if(mediaPlayer.getCurrentTime().toSeconds() == mediaPlayer.getTotalDuration().toSeconds()) 
+                    player.setCycleCount(0);
+                    if(player.getCurrentTime().toSeconds() == player.getTotalDuration().toSeconds()) 
                 {
                     
-                     mediaPlayer.stop();
+                     player.stop();
                 }
                 }
             
@@ -137,22 +159,55 @@ public class FXMLDocumentController implements Initializable
             }
                   if(demSound %2 !=0)
                   {
-                      mediaPlayer.muteProperty().setValue(true);
+                      player.muteProperty().setValue(true);
                   }
                   else
                   {
-                      mediaPlayer.muteProperty().setValue(false);
+                      player.muteProperty().setValue(false);
                   }
                 }
             });
-            mediaPlayer.play();
-        }
-        
-     
-    
     }
-    
-   
+    @FXML
+    private void plButton(ActionEvent event)
+    {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Select a File (*.mp4)", "*.mp4");
+        FileChooser.ExtensionFilter filter1 = new FileChooser.ExtensionFilter("Select a File (*.mp3)", "*.mp3");
+        fileChooser.getExtensionFilters().add(filter);
+        fileChooser.getExtensionFilters().add(filter1);
+        List<File> fl =new ArrayList<File>(fileChooser.showOpenMultipleDialog(null));
+        for(int i = 0; i < fl.size(); i++)
+        {
+            String fp = fl.get(i).toURI().toString();
+            if(fp!=null)
+            {
+                Media md = new Media(fp);
+                mediaPlayer = new MediaPlayer(md);
+                list.add(mediaPlayer);
+            }
+            
+        }
+       
+      for ( int i = 0; i < list.size(); i++) {
+          
+          
+      mediaPlayer = list.get(i);
+      mediaView.setMediaPlayer(mediaPlayer);
+      Setting(mediaPlayer);
+      final MediaPlayer nextPlayer = list.get((i + 1) % list.size());
+      mediaPlayer.setOnEndOfMedia(new Runnable() {
+        @Override public void run() {
+            mediaPlayer = nextPlayer;
+                mediaView.setMediaPlayer(nextPlayer);
+                Setting(nextPlayer);
+                nextPlayer.play();
+        }
+      });
+    }
+      mediaView.getMediaPlayer().play();
+      
+    }
 
     @FXML
     private void resetSpeed(ActionEvent event)
